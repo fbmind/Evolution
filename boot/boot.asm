@@ -1,7 +1,19 @@
+	SECTION CODE ALIGN=16 VSTART=07C00h
+
+	[bits 16]
+	; Base Limit Attr
+	%macro Descriptor 3
+	dw %2 & 0FFFFh
+	dw %1 & 0FFFFh
+	db (%1 >> 16) & 0FFh
+	dw (%3 & 0F0FFh) | ((%2 >> 8) & 0F00h)
+	db (%1 >> 24) & 0FFh
+	%endmacro
+
 	mov ax, cs
 	mov ds, ax
 	mov ss, ax
-	mov sp, 07c00h
+	mov sp, 07C00h
 
 	mov ax, VIDEO_SEG
 	mov es, ax
@@ -14,37 +26,21 @@
 	rep stosw
 
 	; 显示 'boot'
-	mov esi, boot_msg+07c00h
+	mov esi, boot_msg
 	mov edi, 0
 	mov ecx, BOOT_MSG_LEN
 	rep movsb
 
-	hlt
-
 	; div r/m16; dx:ax / r/m16 => ax ... dx
 	; ax:dx => ds:bx 为 GDT 的逻辑地址
-	mov ax, [cs:gdt_base+07c00h]
-	mov dx, [cs:gdt_base+07c00h+02h]
+	mov ax, [cs:gdt_base]
+	mov dx, [cs:gdt_base+02h]
 	mov bx, 16
 	div bx
 	mov ds, ax
 	mov bx, dx
 
-	; 哑描述符
-	mov dword [bx+00h], 00h
-	mov dword [bx+04h], 00h
-
-	mov dword [bx+08h], 07c0001ffh    
-	mov dword [bx+0ch], 000409800h
-
-	mov dword [bx+010h], 08000ffffh     
-	mov dword [bx+014h], 00040920bh     
-
-	mov dword [bx+018h], 000007a00h
-	mov dword [bx+01ch], 000409600h
-
-	mov word [cs: gdt_size+07c00h], 31
-	lgdt [cs: gdt_size+07c00h]
+	lgdt [cs:gdt_size]
 
 	; 开启 A20 地址线
 	in al, 092h
@@ -58,50 +54,40 @@
 	or eax, 1
 	mov cr0, eax
 
-	jmp dword 0x0008:flush
+	jmp CODE_SEG_SELECTOR:dword flush
 
 	[bits 32]
 flush:
-	mov cx, 00000000000_10_000B
+	mov cx, DATA_SEG_SELECTOR
+	mov es, cx
 	mov ds, cx
-	mov byte [0x00], 'P'
-	mov byte [0x02], 'r'
-	mov byte [0x04], 'o'
-	mov byte [0x06], 't'
-	mov byte [0x08], 'e'
-	mov byte [0x0a], 'c'
-	mov byte [0x0c], 't'
-	mov byte [0x0e], ' '
-	mov byte [0x10], 'm'
-	mov byte [0x12], 'o'
-	mov byte [0x14], 'd'
-	mov byte [0x16], 'e'
-	mov byte [0x18], ' '
-	mov byte [0x1a], 'O'
-	mov byte [0x1c], 'K'
-	mov cx, 00000000000_11_000B
-	mov ss, cx
-	mov esp, 0x7c00
-	mov ebp, esp
-	push byte '.'
-	sub ebp, 4
-	cmp ebp, esp
-	jnz ghalt
-	pop eax
-	mov [0x1e], al
-ghalt:
+
+	; 显示 'PM OK'
+	mov esi, pm_msg
+	mov ecx, PM_MSG_LEN
+	rep movsb
+
 	hlt
 
-VIDEO_SEG equ 0b800h
+VIDEO_SEG equ 0B800h
 
-boot_msg db 'b', 07h, 'o', 07h, 'o', 07h, 't', 07h
+boot_msg db 'b', 07h, 'o', 07h, 'o', 07h, 't', 07h, ' ', 07h
 BOOT_MSG_LEN equ $ - boot_msg
 
-protect_mode_msg db 'protect mode', 10
-PROTECT_MODE_MSG_LEN equ $ - protect_mode_msg
+pm_msg db 'P', 07h, 'M', 07h, ' ', 07h, 'O', 07h, 'K', 07h, ' ', 07h
+PM_MSG_LEN equ $ - pm_msg
 
-gdt_size dw 0
-gdt_base dd 0x00007e00
+GDT_BASE:
+	Descriptor 00000000h, 000000h, 00000h
+	Descriptor 00000000h, 0FFFFFh, 01098h
+	Descriptor 00000000h, 0FFFFFh, 01092h
+GDT_SIZE equ $ - GDT_BASE
+
+gdt_size dw GDT_SIZE
+gdt_base dd GDT_BASE
+
+CODE_SEG_SELECTOR equ 0008h
+DATA_SEG_SELECTOR equ 0010h
 
 times 510-($-$$) db 0
-db 0x55,0xaa
+db 0x55, 0xaa
