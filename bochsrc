@@ -632,7 +632,7 @@ private_colormap: enabled=0
 #floppya: 1_44=/dev/fd0H1440, status=inserted
 #floppya: 1_2=../1_2, status=inserted
 #floppya: 1_44=a:, status=inserted
-floppya: 1_44=a.img, status=inserted, write_protected=1
+# floppya: 1_44=a.img, status=inserted, write_protected=1
 #floppya: 1_44=/dev/rfd0a, status=inserted
 
 #=======================================================================
@@ -723,6 +723,7 @@ ata3: enabled=0, ioaddr1=0x168, ioaddr2=0x360, irq=9
 #ata0-slave: type=cdrom, path=/dev/cdrom, status=inserted
 #ata0-slave: type=cdrom, path="drive", status=inserted
 #ata0-slave: type=cdrom, path=/dev/rcd0d, status=inserted 
+ata0-master: type=disk, path="c.img", mode=flat 
 
 #=======================================================================
 # BOOT:
@@ -735,8 +736,8 @@ ata3: enabled=0, ioaddr1=0x168, ioaddr2=0x360, irq=9
 #   boot: network, disk
 #   boot: cdrom, floppy, disk
 #=======================================================================
-boot: floppy
-# boot: disk
+# boot: floppy
+boot: disk
 
 #=======================================================================
 # FLOPPY_BOOTSIG_CHECK: disabled=[0|1]
