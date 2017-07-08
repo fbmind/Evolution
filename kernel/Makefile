@@ -4,7 +4,7 @@ kernel.bin: kernel.asm
 .PHONY: install clean
 
 install:
-	dd if=kernel.bin of=../c.img bs=512 seek=1 count=1 conv=notrunc
+	dd if=kernel.bin of=../c.img bs=512 seek=1 count=10 conv=notrunc
 
 clean:
 	rm -rf kernel.bin kernel.lst

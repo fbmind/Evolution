@@ -31,7 +31,7 @@
 00000000000i[      ]   Sound support: no
 00000000000i[      ]   USB support: no
 00000000000i[      ]   VGA extension support: vbe
-00000000000i[MEM0  ] allocated memory at 0xa67f4008. after alignment, vector=0xa67f5000
+00000000000i[MEM0  ] allocated memory at 0xa682e008. after alignment, vector=0xa682f000
 00000000000i[MEM0  ] 512.00MB
 00000000000i[MEM0  ] mem block size = 0x00020000, blocks=4096
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('/usr/local/share/bochs/BIOS-bochs-latest')
@@ -41,7 +41,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Sun Jul  2 19:43:49 2017 (time0=1498995829)
+00000000000i[CMOS  ] Setting initial clock to: Sat Jul  8 11:41:07 2017 (time0=1499485267)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -68,9 +68,9 @@
 00000000000i[KBD   ] will paste characters every 400 keyboard ticks
 00000000000i[PLUGIN] init_dev of 'harddrv' plugin device by virtual method
 00000000000i[HD    ] HD on ata0-0: 'c.img', 'flat' mode
-00000000000i[IMG   ] hd_size: 1546188005376
-00000000000i[HD    ] ata0-0: autodetect geometry: CHS=2995931/16/63
-00000000000i[HD    ] translation on ata0-0 set to 'lba'
+00000000000i[IMG   ] hd_size: 10321920
+00000000000i[HD    ] ata0-0: autodetect geometry: CHS=20/16/63
+00000000000i[HD    ] translation on ata0-0 set to 'none'
 00000000000i[PLUGIN] init_dev of 'pci_ide' plugin device by virtual method
 00000000000i[DEV   ] PIIX3 PCI IDE controller present at device 1, function 1
 00000000000i[PLUGIN] init_dev of 'unmapped' plugin device by virtual method
@@ -151,7 +151,7 @@
 00000325278i[BIOS  ] ram_end=512MB
 00000365826i[BIOS  ] Found 1 cpu(s)
 00000379410i[BIOS  ] bios_table_addr: 0x000f9cd8 end=0x000fcc00
-00000627624i[XGUI  ] charmap update. Font is 9 x 16
+00000619636i[XGUI  ] charmap update. Font is 9 x 16
 00000707205i[PCI   ] i440FX PMC write to PAM register 59 (TLB Flush)
 00001035134i[P2ISA ] PCI IRQ routing: PIRQA# set to 0x0b
 00001035153i[P2ISA ] PCI IRQ routing: PIRQB# set to 0x09
@@ -183,31 +183,31 @@
 00001531685i[BXVGA ] VBE known Display Interface b0c0
 00001531717i[BXVGA ] VBE known Display Interface b0c5
 00001534642i[VBIOS ] VBE Bios $Id: vbe.c,v 1.65 2014/07/08 18:02:25 vruppert Exp $
-00001879491i[BIOS  ] ata0-0: PCHS=16383/16/63 translation=lba LCHS=1024/255/63
-00002924988i[XGUI  ] charmap update. Font is 9 x 16
-00005326668i[BIOS  ] IDE time out
-00005362749i[BIOS  ] Booting from 0000:7c00
-00005365919i[CPU0  ] WARNING: HLT instruction with IF=0!
-04584985460i[      ] Ctrl-C detected in signal handler.
-04584985460i[      ] dbg: Quit
-04584985460i[CPU0  ] CPU is in protected mode (halted)
-04584985460i[CPU0  ] CS.mode = 32 bit
-04584985460i[CPU0  ] SS.mode = 32 bit
-04584985460i[CPU0  ] EFER   = 0x00000000
-04584985460i[CPU0  ] | EAX=00000000  EBX=00040200  ECX=00000000  EDX=00000028
-04584985460i[CPU0  ] | ESP=00007c00  EBP=00000000  ESI=00040028  EDI=000b814c
-04584985460i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
-04584985460i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-04584985460i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-04584985460i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04584985460i[CPU0  ] |  SS:0018( 0003| 0|  0) 00000000 ffffffff 1 1
-04584985460i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04584985460i[CPU0  ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-04584985460i[CPU0  ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-04584985460i[CPU0  ] | EIP=0004001c (0004001c)
-04584985460i[CPU0  ] | CR0=0x60000011 CR2=0x00000000
-04584985460i[CPU0  ] | CR3=0x00000000 CR4=0x00000000
-04584985460d[PCI   ] Exit
-04584985460i[CMOS  ] Last time is 1498996975 (Sun Jul  2 20:02:55 2017)
-04584985460i[XGUI  ] Exit
-04584985460i[SIM   ] quit_sim called with exit code 0
+00001878933i[BIOS  ] ata0-0: PCHS=20/16/63 translation=none LCHS=20/16/63
+00003090600i[XGUI  ] charmap update. Font is 9 x 16
+00005325995i[BIOS  ] IDE time out
+00005373471i[BIOS  ] Booting from 0000:7c00
+00005379915i[CPU0  ] WARNING: HLT instruction with IF=0!
+11038604626i[      ] Ctrl-C detected in signal handler.
+11038604636i[      ] dbg: Quit
+11038604636i[CPU0  ] CPU is in protected mode (halted)
+11038604636i[CPU0  ] CS.mode = 32 bit
+11038604636i[CPU0  ] SS.mode = 32 bit
+11038604636i[CPU0  ] EFER   = 0x00000000
+11038604636i[CPU0  ] | EAX=00000018  EBX=00040600  ECX=00000000  EDX=0000006e
+11038604636i[CPU0  ] | ESP=00060000  EBP=00000000  ESI=00050418  EDI=000b8152
+11038604636i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf zf af pf cf
+11038604636i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+11038604636i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
+11038604636i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+11038604636i[CPU0  ] |  SS:0018( 0003| 0|  0) 00000000 ffffffff 1 1
+11038604636i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+11038604636i[CPU0  ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+11038604636i[CPU0  ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+11038604636i[CPU0  ] | EIP=00040056 (00040056)
+11038604636i[CPU0  ] | CR0=0x60000011 CR2=0x00000000
+11038604636i[CPU0  ] | CR3=0x00000000 CR4=0x00000000
+11038604636d[PCI   ] Exit
+11038604636i[CMOS  ] Last time is 1499488026 (Sat Jul  8 12:27:06 2017)
+11038604636i[XGUI  ] Exit
+11038604636i[SIM   ] quit_sim called with exit code 0
