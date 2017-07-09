@@ -72,40 +72,53 @@ flush:
 	mov ecx, PM_MSG_LEN
 	rep movsb
 
-	; 读取内核 
-	; 内核第一个扇区，含有内核的信息，从该扇区提取信息后，继续读其他的扇区
-	mov eax, KERNEL_SECTOR_START
+	; 读取内核信息，位于软盘的第二个扇区，扇区号为 1
+	mov eax, KERNEL_INFO_START
 	mov ebx, KERNEL_BASE
 	call read_hard_disk_0
 
 	mov edi, KERNEL_BASE
-	mov eax, [edi] ; 内核长度
-	xor edx, edx
-	mov ecx, 512
-	div ecx
-	or edx, edx
-	jnz @1
-	; eax 里面存的是整扇区数，edx 是不够一扇区的字节数
-	; 若 edx 为 0，说明内核总共占 eax 个扇区，否则为 eax + 1 个扇区
-	; 因为已经读取了 1 个扇区，若 edx 为 0，则仍需读 eax - 1 个扇区，否则再读 eax 个扇区
-	dec eax
+	mov ecx, [edi] ; 内核所占扇区数
 
-@1:
-	; eax 为 0，内核只有一个扇区
-	or eax,eax
-	jz setup
-
-	; 继续读内核
-	mov ecx, eax
+	; 读内核
 	mov eax, KERNEL_SECTOR_START
-	inc eax
-@2:
+	mov ebx, KERNEL_BASE
+rdkernel:
 	call read_hard_disk_0
 	inc eax
-	loop @2 
+	loop rdkernel
 
 setup:
-	jmp far [edi+04h]
+	; 程序头的数量
+	mov cx, [KERNEL_BASE + 02Ch]
+	movzx ecx, cx
+
+	; 程序头的位置
+	mov ebx, [KERNEL_BASE + 01Ch]
+	add ebx, KERNEL_BASE
+
+.Begin:
+	mov eax, [ebx]
+	cmp eax, 0
+	jz .NoAction
+
+	push ecx
+
+	; 拷贝一个程序段
+	mov esi, [ebx + 04h] ; 偏移
+	add esi, KERNEL_BASE
+	mov edi, [ebx + 08h] ; 虚拟地址
+	mov ecx, [ebx + 010h] ; 大小
+	rep movsb
+
+	pop ecx
+
+.NoAction:
+	add ebx, 020h
+	dec ecx
+	jnz .Begin
+
+	jmp KERNEL_ENTRY
 
 	hlt
 
@@ -198,8 +211,10 @@ GDT_BASE:
 	VIDEO_START equ 0B8000h
 	STACK_TOP equ 07C00h
 
-	KERNEL_SECTOR_START equ 1
-	KERNEL_BASE equ 040000h
+	KERNEL_INFO_START equ 1
+	KERNEL_SECTOR_START equ 2
+	KERNEL_BASE equ 010000h
+	KERNEL_ENTRY equ 030400h
 
 	times 510-($-$$) db 0
 	db 0x55, 0xaa

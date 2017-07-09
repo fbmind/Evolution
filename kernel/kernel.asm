@@ -1,23 +1,9 @@
 	[bits 32]
+	[SECTION .text]
 
-	CODE_SEC_VSTART equ 040000h
-	DATA_SEC_VSTART equ 050000h
+	global _start
 
-	SECTION code ALIGN=32 VSTART=CODE_SEC_VSTART
-
-	kernel_length dd kernel_end
-	entry dd start
-	      dw CODE_SEG_SELECTOR
-start:
-	; adjust kernel
-	cld
-	mov esi, CODE_SEC_VSTART + section.data.start
-	mov edi, DATA_SEC_VSTART
-	mov ecx, section.trail.start
-	sub ecx, section.data.start
-	inc ecx
-	rep movsb
-
+_start:
 	; reload GDT
 	lgdt [gdt_size]
 	jmp CODE_SEG_SELECTOR:flush
@@ -35,18 +21,18 @@ flush:
 	mov ecx, KERNEL_MSG_LEN
 	rep movsb
 
-	call SYS_CALL_SELECTOR:00000000h
+	; call SYS_CALL_SELECTOR:00000000h
 	hlt
 
 kprintf:
-	KPRINTF_OFFSET equ (CODE_SEC_VSTART + $ - $$)
+	; KPRINTF_OFFSET equ (CODE_SEC_VSTART + $ - $$)
 
-	mov esi, call_msg 
-	mov edi, VIDEO_START+480
-	mov ecx, CALL_MSG_LEN
-	rep movsb
+	; mov esi, call_msg 
+	; mov edi, VIDEO_START+480
+	; mov ecx, CALL_MSG_LEN
+	; rep movsb
 
-	hlt
+	; hlt
 
 	; Base Limit Attr
 	%macro Descriptor 3
@@ -66,14 +52,14 @@ kprintf:
 	dw (%2 >> 16) & 0FFFFh
 	%endmacro
 
-	SECTION data ALIGN=1 VSTART=DATA_SEC_VSTART
+	[SECTION .data]
 
 GDT_BASE:
 	Descriptor 00000000h, 000000h, 00000h
 	Descriptor 00000000h, 0FFFFFh, 0C098h
 	Descriptor 00000000h, 0FFFFFh, 0C092h
 	Descriptor 00000000h, 0FFFFFh, 0C092h
-	CallGateDescriptor CODE_SEG_SELECTOR, KPRINTF_OFFSET, 0ECh, 0
+	; CallGateDescriptor CODE_SEG_SELECTOR, KPRINTF_OFFSET, 0ECh, 0
 
 	SEG_NUM equ ($ - $$) / 8
 	times (128 - SEG_NUM) dd 0
@@ -97,6 +83,3 @@ GDT_BASE:
 
 	call_msg db 'C', 07h, 'a', 07h, 'l', 07h, 'l', 07h, ' ', 07h, 'G', 07h, 'a', 07h, 't', 07h, 'e', 07h
 	CALL_MSG_LEN equ $-call_msg
-
-	SECTION trail ALIGN=1
-kernel_end:
