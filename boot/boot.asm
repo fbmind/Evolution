@@ -72,6 +72,67 @@ flush:
 	mov ecx, PM_MSG_LEN
 	rep movsb
 
+	; 设置页目录表和页表，开启分页机制
+	; 映射高 1G 空间的前几个页面和最后的几个页面
+	; 映射 4G 空间最开始的几个页面
+
+	; 页目录地址
+	mov eax, PAGE_DIR_ADDR
+	mov cr3, eax
+
+	; 清空 08000h ~ 0b000h 三个页面，用于填写页目录表和页表
+	mov al, 000h
+	mov edi, PAGE_DIR_ADDR
+	mov ecx, 03000h
+	rep stosb
+
+	; 线性空间最后 4M，页目录表最后一项指向自己
+	mov eax, PAGE_DIR_ADDR
+	or eax, PDI_INIT_ATTR
+	mov [PAGE_DIR_ADDR + 0FFCh], eax
+	; 线性空间最开始的 4M
+	mov eax, PAGE_FIRST_ADDR
+	or eax, PDI_INIT_ATTR
+	mov [PAGE_DIR_ADDR], eax
+	; 线性空间从 3G 开始的 4M，也就是内核最开始的 4M
+	mov eax, PAGE_3G_ADDR
+	or eax, PDI_INIT_ATTR
+	mov [PAGE_DIR_ADDR + 0C00h], eax
+
+	; 映射页目录表和页表所占最后 4M 空间
+	; 映射 4G 空间最开始的 8 个页面，之后是页目录表
+	mov ecx, 8
+	mov ebx, PAGE_FIRST_ADDR
+	mov eax, 000000000h
+	or eax, PI_INIT_ATTR
+.first:
+	mov [ebx], eax
+	add ebx, 4
+	add eax, 01000h
+	loop .first
+
+	; 映射最后 1G 空间最开始的 10 个页面 40K
+	mov ecx,  10
+	mov ebx, PAGE_3G_ADDR
+	mov eax, 000010000h
+	or eax, PI_INIT_ATTR
+.3g:
+	mov [ebx], eax
+	add ebx, 4
+	add eax, 01000h
+	loop .3g
+
+	; 映射 0B8000h
+	mov ebx, PAGE_3G_ADDR
+	mov eax, 0B8000h
+	or eax, PI_INIT_ATTR
+	mov [ebx + 02E0h], eax
+
+	; 页机制开关
+	mov eax, cr0
+	or eax, 080000000h
+	mov cr0, eax
+
 	; 读取内核信息，位于软盘的第二个扇区，扇区号为 1
 	mov eax, KERNEL_INFO_START
 	mov ebx, KERNEL_BASE
@@ -119,8 +180,6 @@ setup:
 	jnz .Begin
 
 	jmp KERNEL_ENTRY
-
-	hlt
 
 ; 读取主硬盘
 ; eax 起始扇区编号
@@ -187,9 +246,7 @@ read_hard_disk_0:
 	boot_msg db 'B', 07h, 'o', 07h, 'o', 07h, 't', 07h
 	BOOT_MSG_LEN equ $-boot_msg
 
-	pm_msg db 'P', 07h, 'r', 07h, 'o', 07h, 't', 07h, 'e', 07h
-	       db 'c', 07h, 't', 07h, ' ', 07h, 'm', 07h, 'o', 07h
-	       db 'd', 07h, 'e', 07h
+	pm_msg db 'P', 07h, 'M', 07h
 	PM_MSG_LEN equ $-pm_msg
 
 GDT_BASE:
@@ -213,8 +270,17 @@ GDT_BASE:
 
 	KERNEL_INFO_START equ 1
 	KERNEL_SECTOR_START equ 2
-	KERNEL_BASE equ 010000h
-	KERNEL_ENTRY equ 030400h
+	KERNEL_BASE equ 0C0000000h
+	KERNEL_ENTRY equ 0C0000400h
+
+	; 页表的物理地址
+	PAGE_DIR_ADDR equ 08000h
+	PAGE_FIRST_ADDR equ 09000h
+	PAGE_3G_ADDR equ 0A000h
+	; 页目录项初始属性
+	PDI_INIT_ATTR equ 000000003h
+	; 页表项初始属性
+	PI_INIT_ATTR equ 000000003h
 
 	times 510-($-$$) db 0
 	db 0x55, 0xaa

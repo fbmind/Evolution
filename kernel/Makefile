@@ -9,7 +9,7 @@ kernel.bin: kernel.asm start.c table.c \
 	gcc -c string.c -o string.o -I. -I./include/
 	gcc -c table.c -o table.o -I. -I./include/
 	gcc -c start.c -o start.o -I. -I./include/
-	ld -s -Ttext 0x30400 -o kernel.bin kernel.o string.o table.o start.o
+	ld -s -Ttext 0xC0000400 -o kernel.bin kernel.o string.o table.o start.o
 
 .PHONY: install clean
 
