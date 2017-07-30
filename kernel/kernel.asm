@@ -2,8 +2,13 @@
 	[SECTION .text]
 
 	global _start
+	global restart
+
 	extern cstart
+	extern kernel_main 
 	extern gdt_info
+	extern proc_next
+	extern tss
 
 _start:
 	; reload GDT
@@ -20,11 +25,22 @@ flush:
 	mov ss, ax
 	; mov esp, STACK_TOP
 
-	; display 'Kernel'
-	mov esi, kernel_msg
-	mov edi, VIDEO_START+320
-	mov ecx, KERNEL_MSG_LEN
-	rep movsb
+	jmp kernel_main
+
+restart:
+	mov esp, [proc_next]
+	lldt [esp + P_LDT_SEL]
+	lea eax, [esp + P_STACKTOP]
+	mov dword [tss + TSS_ESP0], eax
+
+	pop gs
+	pop fs
+	pop es
+	pop ds
+	popad
+
+	add esp, 4
+	iretd
 
 	hlt
 
@@ -37,5 +53,9 @@ flush:
 	VIDEO_START equ 0C00B8000h
 	; STACK_TOP equ 060000h
 
-	kernel_msg db 'K', 07h, 'e', 07h, 'r', 07h, 'n', 07h, 'e', 07h, 'l', 07h
-	KERNEL_MSG_LEN equ $-kernel_msg
+	; proc_table related consts
+	P_LDT_SEL equ 72
+	P_STACKTOP equ 72
+
+	; tss related consts
+	TSS_ESP0 equ 4

@@ -1,5 +1,6 @@
 #include "global.h"
 #include "string.h"
+#include "stdio.h"
 
 void cstart () {
 	u16_t *plimit = (u16_t *) gdt_info;
@@ -18,4 +19,6 @@ void cstart () {
 		t++;
 		f++;
 	}
+
+	puts("Hello World!");
 }
