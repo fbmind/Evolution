@@ -6,6 +6,7 @@ void cstart () {
 	u16_t *plimit = (u16_t *) gdt_info;
 	u32_t *pbase = (u32_t *) (gdt_info + 2);
 
+	puts("Init gdt");
 	memcpy((void *) &gdt, (void *) *pbase, *plimit + 1);
 
 	*pbase = (u32_t) &gdt;
@@ -20,5 +21,6 @@ void cstart () {
 		f++;
 	}
 
-	puts("Hello World!");
+	puts("Init idt");
+	init_idt();
 }

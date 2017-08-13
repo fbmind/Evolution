@@ -4,8 +4,8 @@
 #include "evolution/type.h"
 #include "evolution/prot.h"
 
-#define NR_TASKS 1
-#define TASK_STACK_SIZE 50
+#define NR_TASKS 3
+#define TASK_STACK_SIZE 1024
 
 typedef struct stackframe {
 	u32_t gs;

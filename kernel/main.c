@@ -17,19 +17,15 @@ int kernel_main ()
 	int i;
 	struct proc *p_proc;
 
-	uitoa((u32_t) &gdt, buf, sizeof buf);
-	puts("[gdt: ");
-	puts(buf);
-	puts("]");
-
 	/* init tasks */
 	tasks[0].pid = pid_next++;
-	tasks[0].entry = (void *) task_c;
+	tasks[0].entry = (void *) task_a;
 
-	/*
 	tasks[1].pid = pid_next++;
 	tasks[1].entry = (void *) task_b;
-	*/
+
+	tasks[2].pid = pid_next++;
+	tasks[2].entry = (void *) task_c;
 
 	for (i = 0; i < sizeof tasks / sizeof tasks[0]; i++) {
 		p_proc = proc_table + i;
@@ -92,7 +88,7 @@ int kernel_main ()
 void task_a ()
 {
 	while (1) {
-		// puts("A");
+		puts("A");
 		delay(3);
 	}
 }
@@ -100,7 +96,15 @@ void task_a ()
 void task_b ()
 {
 	while (1) {
-		// puts("B");
+		puts("B");
+		delay(3);
+	}
+}
+
+void task_c ()
+{
+	while (1) {
+		puts("C");
 		delay(3);
 	}
 }

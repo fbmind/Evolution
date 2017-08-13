@@ -1,6 +1,6 @@
 all: kernel.bin
 
-kernel.bin: kernel.asm start.c table.c main.c prot.c \
+kernel.bin: kernel.asm start.c table.c main.c prot.c idt.c \
 	libc/string.c \
 	libc/stdio.c \
 	global.h \
@@ -15,9 +15,10 @@ kernel.bin: kernel.asm start.c table.c main.c prot.c \
 	gcc -c start.c -o start.o -I. -I./include/
 	gcc -c main.c -o main.o -I. -I./include/
 	gcc -c prot.c -o prot.o -I. -I./include/
+	gcc -fno-stack-protector -c idt.c -o idt.o -I. -I./include/
 	gcc -c libc/stdio.c -o libc/stdio.o -I. -I./include/
 	gcc -fno-stack-protector -c libc/string.c -o libc/string.o -I. -I./include/
-	ld -s -Ttext 0xC0000400 -o kernel.bin kernel.o table.o start.o main.o prot.o \
+	ld -s -Ttext 0xC0000400 -o kernel.bin kernel.o table.o start.o main.o prot.o idt.o \
 	libc/string.o \
 	libc/stdio.o
 

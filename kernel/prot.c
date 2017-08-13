@@ -24,3 +24,11 @@ void init_descriptor (descriptor_t *p_desc, u32_t base, u32_t limit, u16_t attr)
 	p_desc->attr2_limit2 = ((attr >> 8) & 0xF0) | ((limit >> 16) & 0x0F);
 	p_desc->base3 = (base >> 24) & 0x00FF;
 }
+
+void init_gate (gate_t *p_gate, u16_t selector, u32_t offset, u16_t attr)
+{
+	p_gate->offset1 = offset & 0xFFFF;
+	p_gate->selector = selector;
+	p_gate->attr = attr;
+	p_gate->offset2 = (offset >> 16) & 0xFFFF;
+}

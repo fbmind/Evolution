@@ -15,6 +15,8 @@
 
 EXTERN descriptor_t gdt[GDT_SIZE];
 EXTERN u8_t gdt_info[6];
+EXTERN gate_t idt[GATE_SIZE];
+EXTERN u8_t idt_info[6];
 EXTERN int tty_pos;
 EXTERN proc_t proc_table[NR_TASKS];
 EXTERN proc_t *proc_next;

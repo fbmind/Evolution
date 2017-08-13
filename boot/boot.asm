@@ -278,9 +278,9 @@ GDT_BASE:
 	PAGE_FIRST_ADDR equ 09000h
 	PAGE_3G_ADDR equ 0A000h
 	; 页目录项初始属性
-	PDI_INIT_ATTR equ 000000003h
+	PDI_INIT_ATTR equ 000000007h
 	; 页表项初始属性
-	PI_INIT_ATTR equ 000000003h
+	PI_INIT_ATTR equ 000000007h
 
 	times 510-($-$$) db 0
 	db 0x55, 0xaa
