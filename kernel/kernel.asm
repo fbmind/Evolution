@@ -3,9 +3,10 @@
 
 	global _start
 	global restart
+	global task_c
 
 	extern cstart
-	extern kernel_main 
+	extern kernel_main
 	extern gdt_info
 	extern proc_next
 	extern tss
@@ -28,6 +29,10 @@ flush:
 	jmp kernel_main
 
 restart:
+	mov eax, 0
+	mov ax, SELECTOR_TSS
+	ltr ax
+
 	mov esp, [proc_next]
 	lldt [esp + P_LDT_SEL]
 	lea eax, [esp + P_STACKTOP]
@@ -40,15 +45,22 @@ restart:
 	popad
 
 	add esp, 4
+
 	iretd
 
 	hlt
+
+task_c:
+	mov eax, 1
+	mov ebx, 2
+	mov ecx, 3
+	jmp task_c
 
 	[SECTION .data]
 	CODE_SEG_SELECTOR equ 0008h
 	DATA_SEG_SELECTOR equ 0010h
 	STACK_SEG_SELECTOR equ 0018h
-	SYS_CALL_SELECTOR equ 0020h
+	SELECTOR_TSS equ 020h
 
 	VIDEO_START equ 0C00B8000h
 	; STACK_TOP equ 060000h

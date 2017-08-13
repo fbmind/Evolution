@@ -16,7 +16,7 @@ kernel.bin: kernel.asm start.c table.c main.c prot.c \
 	gcc -c main.c -o main.o -I. -I./include/
 	gcc -c prot.c -o prot.o -I. -I./include/
 	gcc -c libc/stdio.c -o libc/stdio.o -I. -I./include/
-	gcc -c libc/string.c -o libc/string.o -I. -I./include/
+	gcc -fno-stack-protector -c libc/string.c -o libc/string.o -I. -I./include/
 	ld -s -Ttext 0xC0000400 -o kernel.bin kernel.o table.o start.o main.o prot.o \
 	libc/string.o \
 	libc/stdio.o

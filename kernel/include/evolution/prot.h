@@ -2,7 +2,7 @@
 #define _PROT_H_
 
 #define GDT_SIZE 128
-#define LDT_SIZE 2 
+#define LDT_SIZE 2
 
 typedef struct descriptor {
 	u16_t limit1;
@@ -27,7 +27,13 @@ typedef struct descriptor {
 #define INDEX_TSS 0x04
 #define INDEX_LDT_FIRST 0x05
 
+/* TI 1 RPL 3 */
+#define SELECTOR_LDT_CODE 0x07
+#define SELECTOR_LDT_DATA 0x0F
+
+/* G 0 | D/B 1 | AVL 0 | P 1 | DPL 0 | S 0 system | TYPE 2 LDT */
 #define LDT_ATTR 0x4082
+/* G 0 | D/B 1 | AVL 0 | P 1 | DPL 0 | S 0 system | TYPE 9 386 TSS */
 #define TSS_ATTR 0x4089
 
 void init_descriptor (descriptor_t *p_desc, u32_t base, u32_t limit, u16_t attr);

@@ -7,33 +7,49 @@
 static void delay (int seconds);
 void task_a ();
 void task_b ();
-void restart();
+void restart ();
+void task_c ();
+
+char buf[128];
 
 int kernel_main ()
 {
 	int i;
 	struct proc *p_proc;
 
+	uitoa((u32_t) &gdt, buf, sizeof buf);
+	puts("[gdt: ");
+	puts(buf);
+	puts("]");
+
 	/* init tasks */
 	tasks[0].pid = pid_next++;
-	tasks[0].entry = (void *) task_a;
+	tasks[0].entry = (void *) task_c;
 
+	/*
 	tasks[1].pid = pid_next++;
 	tasks[1].entry = (void *) task_b;
+	*/
 
 	for (i = 0; i < sizeof tasks / sizeof tasks[0]; i++) {
 		p_proc = proc_table + i;
 
 		/* LDT */
 		p_proc->ldt_sel = SELECTOR_LDT_FIRST + i * 8;
-		/* Code */
+		/* Base 0x00000000
+		 * Limit 0xFFFFF
+		 * Type 8 exec only | P 1 exists | DPL 3 | S 1 Data or code | G 1 | D/B 1 | AVL 0
+		*/
 		p_proc->ldts[0].limit1 = 0xFFFF;
 		p_proc->ldts[0].base1 = 0x0000;
 		p_proc->ldts[0].base2 = 0x00;
 		p_proc->ldts[0].attr1 = 0xF8;
 		p_proc->ldts[0].attr2_limit2 = 0xCF;
 		p_proc->ldts[0].base3 = 0x00;
-		/* Data */
+		/* Base 0x00000000
+		 * Limit 0xFFFFF
+		 * Type 2 read write | P 1 exists | DPL 3 | S 1 Data or code | G 1 | D/B 1 | AVL 0
+		*/
 		p_proc->ldts[1].limit1 = 0xFFFF;
 		p_proc->ldts[1].base1 = 0x0000;
 		p_proc->ldts[1].base2 = 0x00;
@@ -43,28 +59,28 @@ int kernel_main ()
 
 		/* init LDT descriptor in GDT */
 		init_descriptor(gdt + INDEX_LDT_FIRST + i,
-			(u32_t) p_proc->ldts, p_proc->ldts , LDT_ATTR);
+			(u32_t) (p_proc->ldts), (u32_t) (sizeof p_proc->ldts - 1), LDT_ATTR);
 
 		/* stackframe */
-		p_proc->regs.cs = 0x03;
-		p_proc->regs.ds = 0x0F;
-		p_proc->regs.es = 0x0F;
-		p_proc->regs.fs = 0x0F;
-		p_proc->regs.ss = 0x0F;
-		p_proc->regs.gs = 0x0F;
+		p_proc->regs.cs = SELECTOR_LDT_CODE;
+		p_proc->regs.ds = SELECTOR_LDT_DATA;
+		p_proc->regs.es = SELECTOR_LDT_DATA;
+		p_proc->regs.fs = SELECTOR_LDT_DATA;
+		p_proc->regs.ss = SELECTOR_LDT_DATA;
+		p_proc->regs.gs = SELECTOR_LDT_DATA;
 		p_proc->regs.eip = (u32_t) tasks[i].entry;
 		p_proc->regs.esp = (u32_t) (task_stack + TASK_STACK_SIZE * i);
-		p_proc->regs.eflags = 0x1202;
-
-		/* tss */
-		tss.ss0 = SELECTOR_KERNEL_CODE;
-		tss.iobase = sizeof tss;
-		init_descriptor(gdt + INDEX_TSS,
-			(u32_t) &tss, sizeof tss - 1, TSS_ATTR);
+		p_proc->regs.eflags = 0x1002; // 0x1202
 
 		/* other info */
 		p_proc->pid = tasks[i].pid;
 	}
+
+	/* tss */
+	tss.ss0 = SELECTOR_KERNEL_DATA;
+	tss.iobase = sizeof tss;
+	init_descriptor(gdt + INDEX_TSS,
+		(u32_t) &tss, sizeof tss - 1, TSS_ATTR);
 
 	proc_next = proc_table;
 	restart();
@@ -73,16 +89,20 @@ int kernel_main ()
 	}
 }
 
-void task_a () 
+void task_a ()
 {
-	puts("A");
-	delay(3);
+	while (1) {
+		// puts("A");
+		delay(3);
+	}
 }
 
-void task_b () 
+void task_b ()
 {
-	puts("B");
-	delay(3);
+	while (1) {
+		// puts("B");
+		delay(3);
+	}
 }
 
 static void delay (int seconds)

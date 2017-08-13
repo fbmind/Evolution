@@ -12,7 +12,7 @@ int puts(const char *s)
 		write_pos = (u8_t *) VIDEO_START + tty_pos * 2;
 		*write_pos = write;
 		*(write_pos + 1) = 0x07;
-		
+
 		if (++tty_pos >= 25 * 80) {
 			tty_pos = 0;
 		}
