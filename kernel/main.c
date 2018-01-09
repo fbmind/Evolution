@@ -89,7 +89,7 @@ void task_a ()
 {
 	while (1) {
 		puts("A");
-		delay(3);
+		delay(300);
 	}
 }
 

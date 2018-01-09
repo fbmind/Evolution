@@ -22,6 +22,8 @@ void general_protection ();
 void page_fault ();
 void copr_error ();
 
+void clock_handler();
+
 void init_idt ()
 {
 	init_gate(idt, SELECTOR_KERNEL_CODE, (u32_t) divide_error, EXCEPTION_ATTR);
@@ -40,6 +42,8 @@ void init_idt ()
 	init_gate(idt + 13, SELECTOR_KERNEL_CODE, (u32_t) general_protection, EXCEPTION_ATTR);
 	init_gate(idt + 14, SELECTOR_KERNEL_CODE, (u32_t) page_fault, EXCEPTION_ATTR);
 	init_gate(idt + 15, SELECTOR_KERNEL_CODE, (u32_t) copr_error, EXCEPTION_ATTR);
+
+	init_gate(idt + 32, SELECTOR_KERNEL_CODE, (u32_t) clock_handler, EXCEPTION_ATTR);
 
 	u16_t *plimit = (u16_t *) idt_info;
 	u32_t *pbase = (u32_t *) (idt_info + 2);
@@ -89,4 +93,9 @@ void exception_handler (int vector_no, int errcode, int eip, int cs, int eflags)
 	uitoa(eip, buf, sizeof buf);
 	puts(buf);
 	puts("]");
+}
+
+void clock_handler ()
+{
+	puts("clock handler");
 }

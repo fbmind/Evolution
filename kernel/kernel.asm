@@ -46,6 +46,8 @@ flush:
 	mov ss, ax
 	; mov esp, STACK_TOP
 
+	sti
+
 	jmp kernel_main
 
 restart:
