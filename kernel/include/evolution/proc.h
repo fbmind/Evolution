@@ -4,7 +4,7 @@
 #include "evolution/type.h"
 #include "evolution/prot.h"
 
-#define NR_TASKS 3
+#define NR_TASKS 4
 #define TASK_STACK_SIZE 1024
 #define KERNEL_STACK_SIZE 1024
 
@@ -77,5 +77,6 @@ typedef struct task {
 } task_t;
 
 void schedule();
+void whoisnext();
 
 #endif

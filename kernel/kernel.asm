@@ -34,6 +34,9 @@
 	extern tss
 
 	extern reenable_8259a
+	extern whoisnext
+
+	extern debug_num
 
 _start:
 	; reload GDT
@@ -60,7 +63,10 @@ restart:
 	mov ax, SELECTOR_TSS
 	ltr ax
 
+	; use proc_next's stackframe as stack
 	mov esp, [proc_next]
+
+	; use proc_next's LDT and esp0
 	lldt [esp + P_LDT_SEL]
 	lea eax, [esp + P_STACKTOP]
 	mov dword [tss + TSS_ESP0], eax
@@ -171,13 +177,24 @@ hwint00:
 	mov es, dx
 
 	; use kernel stack
+	mov eax, esp
 	mov esp, [kernel_stack]
+
+	; push eax
+	; call debug_num
+	; sub esp, 4
 
 	call clock_handler
 	call reenable_8259a
+	; call whoisnext
 
 	; reuse stackframe as stack
 	mov esp, [proc_next]
+
+	; use new proc's LDT and esp0
+	lldt [esp + P_LDT_SEL]
+	lea eax, [esp + P_STACKTOP]
+	mov dword [tss + TSS_ESP0], eax
 
 	; restore regs from stackframe
 	pop gs
@@ -185,6 +202,7 @@ hwint00:
 	pop es
 	pop ds
 	popad
+
 	add esp, 4
 
 	iretd

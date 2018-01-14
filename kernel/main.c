@@ -9,6 +9,9 @@ void task_a ();
 void task_b ();
 void restart ();
 void task_c ();
+void task_d ();
+
+void debug_num();
 
 char buf[128];
 
@@ -29,6 +32,10 @@ int kernel_main ()
 	tasks[2].pid = pid_next++;
 	tasks[2].entry = (void *) task_c;
 	strcpy(tasks[2].p_name, "task_c");
+
+	tasks[3].pid = pid_next++;
+	tasks[3].entry = (void *) task_d;
+	strcpy(tasks[3].p_name, "task_d");
 
 	for (i = 0; i < sizeof tasks / sizeof tasks[0]; i++) {
 		p_proc = proc_table + i;
@@ -89,6 +96,7 @@ int kernel_main ()
 	proc_next = proc_table;
 	restart();
 
+
 	while (1) {
 	}
 }
@@ -97,7 +105,7 @@ void task_a ()
 {
 	while (1) {
 		puts("A");
-		delay(30000);
+		delay(3);
 	}
 }
 
@@ -105,7 +113,7 @@ void task_b ()
 {
 	while (1) {
 		puts("B");
-		delay(30000);
+		delay(3);
 	}
 }
 
@@ -113,7 +121,15 @@ void task_c ()
 {
 	while (1) {
 		puts("C");
-		delay(30000);
+		delay(3);
+	}
+}
+
+void task_d ()
+{
+	while (1) {
+		puts("D");
+		delay(3);
 	}
 }
 

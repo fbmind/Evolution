@@ -1,6 +1,6 @@
 all: kernel.bin
 
-kernel.bin: kernel.asm 8259a.asm start.c table.c main.c proc.c prot.c idt.c \
+kernel.bin: kernel.asm 8259a.asm start.c table.c main.c proc.c prot.c idt.c debug.c \
 	libc/string.c \
 	libc/stdio.c \
 	global.h \
@@ -17,10 +17,11 @@ kernel.bin: kernel.asm 8259a.asm start.c table.c main.c proc.c prot.c idt.c \
 	gcc -c main.c -o main.o -I. -I./include/
 	gcc -c proc.c -o proc.o -I. -I./include/
 	gcc -c prot.c -o prot.o -I. -I./include/
+	gcc -fno-stack-protector -c debug.c -o debug.o -I. -I./include/
 	gcc -fno-stack-protector -c idt.c -o idt.o -I. -I./include/
 	gcc -c libc/stdio.c -o libc/stdio.o -I. -I./include/
 	gcc -fno-stack-protector -c libc/string.c -o libc/string.o -I. -I./include/
-	ld -s -Ttext 0xC0000400 -o kernel.bin kernel.o 8259a.o table.o start.o main.o proc.o prot.o idt.o \
+	ld -s -Ttext 0xC0000400 -o kernel.bin kernel.o 8259a.o table.o start.o main.o proc.o prot.o debug.o idt.o \
 	libc/string.o \
 	libc/stdio.o
 
