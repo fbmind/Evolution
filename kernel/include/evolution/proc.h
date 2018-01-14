@@ -6,6 +6,9 @@
 
 #define NR_TASKS 3
 #define TASK_STACK_SIZE 1024
+#define KERNEL_STACK_SIZE 1024
+
+#define MAX_PROC_TICKS 100
 
 typedef struct stackframe {
 	u32_t gs;
@@ -33,6 +36,7 @@ typedef struct proc {
 	u16_t ldt_sel;
 	descriptor_t ldts[LDT_SIZE];
 	u32_t pid;
+	u32_t ticks;
 	char p_name[16];
 } proc_t;
 
@@ -71,5 +75,7 @@ typedef struct task {
 	char p_name[16];
 	void *entry;
 } task_t;
+
+void schedule();
 
 #endif

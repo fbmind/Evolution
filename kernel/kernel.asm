@@ -21,13 +21,19 @@
 	global page_fault
 	global copr_error
 
+	global hwint00
+
 	extern exception_handler
+	extern clock_handler
 	extern cstart
 	extern kernel_main
 	extern gdt_info
 	extern idt_info
 	extern proc_next
+	extern kernel_stack
 	extern tss
+
+	extern reenable_8259a
 
 _start:
 	; reload GDT
@@ -44,7 +50,6 @@ flush:
 	mov es, ax
 	mov ax, STACK_SEG_SELECTOR
 	mov ss, ax
-	; mov esp, STACK_TOP
 
 	sti
 
@@ -151,6 +156,39 @@ exception:
 	add esp, 4 * 2
 	hlt
 
+hwint00:
+	; save regs in stackframe
+	sub esp, 4
+	pushad
+	push ds
+	push es
+	push fs
+	push gs
+
+	; use kernel segments
+	mov dx, ss
+	mov ds, dx
+	mov es, dx
+
+	; use kernel stack
+	mov esp, [kernel_stack]
+
+	call clock_handler
+	call reenable_8259a
+
+	; reuse stackframe as stack
+	mov esp, [proc_next]
+
+	; restore regs from stackframe
+	pop gs
+	pop fs
+	pop es
+	pop ds
+	popad
+	add esp, 4
+
+	iretd
+
 	[SECTION .data]
 	CODE_SEG_SELECTOR equ 0008h
 	DATA_SEG_SELECTOR equ 0010h
@@ -158,7 +196,6 @@ exception:
 	SELECTOR_TSS equ 020h
 
 	VIDEO_START equ 0C00B8000h
-	; STACK_TOP equ 060000h
 
 	; proc_table related consts
 	P_LDT_SEL equ 72

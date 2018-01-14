@@ -4,7 +4,8 @@
 
 void init_8259a();
 
-void cstart () {
+void cstart ()
+{
 	u16_t *plimit = (u16_t *) gdt_info;
 	u32_t *pbase = (u32_t *) (gdt_info + 2);
 

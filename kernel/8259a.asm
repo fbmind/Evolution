@@ -1,4 +1,5 @@
 	global init_8259a
+	global reenable_8259a
 
 init_8259a:
 	; 020h ICW1 8259A config
@@ -55,4 +56,9 @@ io_delay:
 	nop
 	nop
 	nop
+	ret
+
+reenable_8259a:
+	mov al, 020h
+	out 020h, al
 	ret

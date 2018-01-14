@@ -24,5 +24,6 @@ EXTERN tss_t tss;
 EXTERN task_t tasks[NR_TASKS];
 EXTERN u32_t pid_next;
 EXTERN u8_t task_stack[TASK_STACK_SIZE * NR_TASKS];
+EXTERN u8_t kernel_stack[KERNEL_STACK_SIZE];
 
 #endif
