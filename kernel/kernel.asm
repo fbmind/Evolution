@@ -182,7 +182,7 @@ hwint00:
 
 	; push eax
 	; call debug_num
-	; sub esp, 4
+	; add esp, 4
 
 	call clock_handler
 	call reenable_8259a
