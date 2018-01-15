@@ -15,6 +15,7 @@ void cstart ()
 	*pbase = (u32_t) &gdt;
 	*plimit = sizeof gdt - 1;
 
+	/* 这段代码有什么用呢？忘了，好像是为了查看 gdt_info 的内容。 */
 	u8_t *t = (u8_t *) 0x7e00;
 	u8_t *f = gdt_info;
 
